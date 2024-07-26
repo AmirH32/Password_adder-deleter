@@ -147,7 +147,7 @@ def text_parser(lines):
 
     
 
-def menu(master_pass):
+def menu():
     choice = int(input("1). Add account \n2). Delete account\n3). Save changes\n:"))
     if choice == 1:
         account = input("Enter the account and/or a hint:")
@@ -170,11 +170,13 @@ def menu(master_pass):
 
 
 if __name__ == "__main__":
+    print('IF YOU WANT TO ADD PASSWORDS QUICKLY \n1).CREATE A "Passwords.txt" file or just "Passwords" (on windows)\n2).Insert passwords in the format "label,password" (no spaces) and seperate each entry with a new line\n3).Open either Adder or Crimson\nOr simply just use the adder program and add them 1 by 1')
+    print("\n"*3+"Resuming program...")
     encryptor = Encryptor()
     master_pass = auth_decrypt()
     valid = False
     while valid == False:
-        valid = menu(master_pass)
+        valid = menu()
     encryptor.encrypt_file(FILE_PATH, master_pass)
 
 
