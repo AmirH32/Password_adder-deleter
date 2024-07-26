@@ -170,7 +170,7 @@ def menu():
 
 
 if __name__ == "__main__":
-    print('IF YOU WANT TO ADD PASSWORDS QUICKLY \n1).CREATE A "Passwords.txt" file or just "Passwords" (on windows)\n2).Insert passwords in the format "label,password" (no spaces) and seperate each entry with a new line\n3).Open either Adder or Crimson\nOr simply just use the adder program and add them 1 by 1')
+    print('IF YOU WANT TO ADD PASSWORDS QUICKLY \n1).CREATE A "Passwords.txt" file or just "Passwords" (on windows)\n2).Insert passwords in the format "label,password" (no spaces) and seperate each entry with a new line\n3).Open either Adder or Crimson\nOr simply just use the adder program and add them 1 by 1\nTIP - Make sure adder and crimson are in the same folder preferably a designated passwords folder')
     print("\n"*3+"Resuming program...")
     encryptor = Encryptor()
     master_pass = auth_decrypt()
@@ -178,5 +178,3 @@ if __name__ == "__main__":
     while valid == False:
         valid = menu()
     encryptor.encrypt_file(FILE_PATH, master_pass)
-
-
