@@ -123,7 +123,7 @@ def auth_decrypt():
         print("===Successfully recovered Passwords.txt file and encrypted it===")
 
     while count < 3 and valid == False:
-        password = getpass.getpass(prompt='Enter password: ')
+        password = getpass.getpass(prompt='Enter password to open encrypted file: ')
         try:
             valid = Encryptor.decrypt_file(FILE_PATH+'.enc', password)
         except Exception as e:
