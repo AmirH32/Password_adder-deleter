@@ -15,13 +15,12 @@ TAG_SIZE = 16
 ITERATIONS = 100000
 FILE_PATH = "Passwords.txt"
 
-def write_to_file(text, master_pass):
+def write_to_file(text):
     with open(FILE_PATH, 'a') as file:
         file.write(f"{text}\n")
-    encryptor.encrypt_file(FILE_PATH, master_pass)
 
 
-def delete_from_file(line_num, master_pass):
+def delete_from_file(line_num):
     with open(FILE_PATH, 'r') as file:
         lines = file.readlines()
     
@@ -29,8 +28,6 @@ def delete_from_file(line_num, master_pass):
         for index, line in enumerate(lines):
             if index !=  line_num:
                 file.write(line)
-    
-    encryptor.encrypt_file(FILE_PATH, master_pass)
 
 def find_closest_string(target, string_list):
     closest_match = process.extractOne(target, string_list)
@@ -63,15 +60,10 @@ class Encryptor:
         )
         
         encryptor = cipher.encryptor()
-        try:
-            with open(file_path, 'rb') as f:
-                plaintext = f.read()
-        except:
-            with open(file_path, 'wb') as f:
-                print('=== Initialisation complete - Created "Passwords.txt" file ===\n Please run again to start adding/deleting passwords')
-                pass
+
         with open(file_path, 'rb') as f:
                 plaintext = f.read()
+
         ciphertext = encryptor.update(plaintext) + encryptor.finalize()
         
         with open(file_path + '.enc', 'wb') as f:
@@ -116,14 +108,24 @@ def auth_decrypt():
     """Decrypts the file after the correct password is entered otherwise terminates the program"""
     count = 0
     valid = False
+
+    ### Checks if file passwords file doesnt exist at all
+    if not os.path.isfile(FILE_PATH) and not os.path.isfile(FILE_PATH+'.enc'):
+        print("Passwords.txt file not found >>>\nCreating a Passwords.txt file for you...")
+        with open(FILE_PATH, 'w') as f:
+            pass
+        password = getpass.getpass(prompt="Set your master password (main password to decrypt text file):")
+        Encryptor.encrypt_file(FILE_PATH, password)
+    ### Checks if you have an unencrypted file
+    elif not os.path.isfile(FILE_PATH+'.enc'):
+        password = getpass.getpass(prompt='Set your master password (main password to decrypt text file): ')
+        Encryptor.encrypt_file(FILE_PATH, password)
+        print("===Successfully recovered Passwords.txt file and encrypted it===")
+
     while count < 3 and valid == False:
         password = getpass.getpass(prompt='Enter password: ')
         try:
             valid = Encryptor.decrypt_file(FILE_PATH+'.enc', password)
-        except FileNotFoundError as e:
-            Encryptor.encrypt_file(FILE_PATH, password)
-            input("Press enter to quit:")
-            quit()
         except Exception as e:
             print(f"Incorrect password: {e}")
             count += 1
@@ -146,13 +148,13 @@ def text_parser(lines):
     
 
 def menu(master_pass):
-    choice = int(input("1). Add account \n2). Delete account\n:"))
+    choice = int(input("1). Add account \n2). Delete account\n3). Save changes\n:"))
     if choice == 1:
         account = input("Enter the account and/or a hint:")
         password = getpass.getpass(prompt='Enter password: ')
-        write_to_file(f"{account}, {password}", master_pass)
-        print(f"{account} has been written to the file")
-        input("Press enter to escape...")
+        write_to_file(f"{account}, {password}")
+        print(f">>>{account} has been written to the file")
+        return False
     elif choice == 2:
         lines = file_reader(FILE_PATH)
         before_comma, _ = text_parser(lines)
@@ -160,15 +162,19 @@ def menu(master_pass):
         account = input("Enter account to delete:")
         closest = find_closest_string(account, before_comma)
         line_num = before_comma.index(closest)
-        delete_from_file(line_num, master_pass)
+        delete_from_file(line_num)
         print(f"{closest} account deleted...")
-        input("Press enter to escape...")
+        return False
+    elif choice == 3:
+        return True
 
 
 if __name__ == "__main__":
     encryptor = Encryptor()
     master_pass = auth_decrypt()
-    menu(master_pass)
-
+    valid = False
+    while valid == False:
+        valid = menu(master_pass)
+    encryptor.encrypt_file(FILE_PATH, master_pass)
 
 
