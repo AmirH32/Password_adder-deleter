@@ -167,6 +167,8 @@ def menu():
         return False
     elif choice == 3:
         return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
